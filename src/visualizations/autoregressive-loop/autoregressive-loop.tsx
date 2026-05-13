@@ -30,7 +30,7 @@ import {
 import { getNextToken } from "@/lib/ollama/client"
 import { tokenizeForDisplay } from "@/lib/tokenization/simple-tokenizer"
 import { cn } from "@/lib/utils"
-import { visualizations } from "@/visualizations"
+import type { VisualizationExample } from "@/visualizations/types"
 
 import { infoCopy } from "./info-copy"
 import { InfoDialog } from "./info-dialog"
@@ -38,8 +38,33 @@ import { LoopDiagram } from "./loop-diagram"
 import { TutorialDialog } from "./tutorial-dialog"
 import type { GenerationStep, LoopPhase } from "./types"
 
-const definition = visualizations[0]
-const defaultExample = definition.examples[0]
+const examples: VisualizationExample[] = [
+  {
+    id: "bayesian",
+    label: "Bayesian reasoning",
+    prompt: "Can you explain what Bayesian reasoning is?",
+    system:
+      "You are a clear tutor. Answer in two concise paragraphs and avoid hidden reasoning traces.",
+  },
+  {
+    id: "sentiment",
+    label: "Sentiment analysis",
+    prompt:
+      "Classify this review as positive, neutral, or negative: The headphones fit well, but the battery barely lasts half a day.",
+    system:
+      "You are a terse classifier. Answer with the label first, then one sentence of explanation.",
+  },
+  {
+    id: "debugging",
+    label: "Debugging",
+    prompt:
+      "A JavaScript function returns undefined when I expect an array. What are the first three things I should check?",
+    system:
+      "You are a pragmatic debugging assistant. Keep the answer short and concrete.",
+  },
+]
+
+const defaultExample = examples[0]
 
 export function AutoregressiveLoop() {
   const [prompt, setPrompt] = useState(defaultExample.prompt)
@@ -164,7 +189,7 @@ export function AutoregressiveLoop() {
   }
 
   function loadExample(exampleId: string) {
-    const example = definition.examples.find((item) => item.id === exampleId)
+    const example = examples.find((item) => item.id === exampleId)
     if (!example) return
     setPrompt(example.prompt)
     setSystem(example.system ?? "")
