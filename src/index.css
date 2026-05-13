@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 224 33% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 33% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 33% 12%;
+    --primary: 194 67% 33%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 24% 92%;
+    --secondary-foreground: 217 24% 24%;
+    --muted: 214 28% 94%;
+    --muted-foreground: 220 10% 43%;
+    --accent: 349 88% 64%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 28% 88%;
+    --input: 214 28% 88%;
+    --ring: 194 67% 33%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply min-h-screen bg-background text-foreground antialiased;
+    letter-spacing: 0;
+  }
+}
+
+@layer utilities {
+  .token-chip {
+    @apply inline-flex min-h-7 items-center rounded-md border border-sky-800/30 bg-sky-50 px-2 py-1 font-mono text-sm leading-none text-slate-800 shadow-sm;
+  }
+
+  .token-chip-special {
+    @apply border-slate-300 bg-slate-100 text-slate-500;
+  }
+
+  .token-chip-prompt {
+    @apply border-rose-400 bg-rose-50 text-slate-900;
+  }
+}
