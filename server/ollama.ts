@@ -5,8 +5,12 @@ type OllamaTagsResponse = {
   models?: Array<{ name: string; model?: string }>
 }
 
-type OllamaGenerateResponse = {
+type OllamaChatResponse = {
   response?: string
+  message?: {
+    role?: string
+    content?: string
+  }
   done?: boolean
   done_reason?: string
   prompt_eval_count?: number
@@ -99,11 +103,10 @@ export async function generateNextToken({
     }
   }
 
-  const generationPrompt = buildPrompt(prompt, generated)
+  const messages = buildMessages(prompt, system, generated)
   const body = {
     model: MODEL,
-    prompt: generationPrompt,
-    system,
+    messages,
     stream: false,
     think: false,
     logprobs: true,
@@ -118,7 +121,7 @@ export async function generateNextToken({
     },
   }
 
-  const response = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
+  const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -131,11 +134,11 @@ export async function generateNextToken({
     throw new Error(text || `Ollama returned ${response.status}`)
   }
 
-  const json = (await response.json()) as OllamaGenerateResponse
+  const json = (await response.json()) as OllamaChatResponse
   const tokenInfo = json.logprobs?.[0]
-  const token = tokenInfo?.token ?? json.response ?? ""
+  const token = tokenInfo?.token ?? json.message?.content ?? json.response ?? ""
   const topCandidates = normalizeTopLogprobs(tokenInfo, token)
-  const contextCount = json.prompt_eval_count ?? estimateTokenCount(generationPrompt)
+  const contextCount = json.prompt_eval_count ?? estimateTokenCount(prompt + generated)
   const stopReason = getStopReason({
     token,
     done: Boolean(json.done),
@@ -159,8 +162,21 @@ export async function generateNextToken({
   }
 }
 
-function buildPrompt(prompt: string, generated: string) {
-  return `${prompt}\n\nAssistant:${generated}`
+function buildMessages(prompt: string, system: string | undefined, generated: string) {
+  const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> =
+    []
+
+  if (system?.trim()) {
+    messages.push({ role: "system", content: system.trim() })
+  }
+
+  messages.push({ role: "user", content: prompt })
+
+  if (generated) {
+    messages.push({ role: "assistant", content: generated })
+  }
+
+  return messages
 }
 
 function normalizeTopLogprobs(tokenInfo: OllamaLogprob | undefined, fallbackToken: string) {
