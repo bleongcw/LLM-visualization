@@ -58,16 +58,14 @@ export function VisualizationShell({
           <div className="max-w-5xl">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <h2 className="text-2xl font-bold tracking-normal text-primary">
-                1.1. The autoregressive loop
+                {definition.heading ?? definition.title}
               </h2>
               {definition.modelBadge ? (
                 <Badge variant="success">{definition.modelBadge}</Badge>
               ) : null}
             </div>
             <p className="text-sm leading-6 text-muted-foreground">
-              {definition.description} Choose an example prompt, or type your
-              own, then step through the loop to see how each new token becomes
-              part of the next input.
+              {definition.description}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">

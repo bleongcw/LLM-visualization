@@ -1,15 +1,22 @@
 import { Network, PanelsTopLeft } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { type VisualizationDefinition } from "@/visualizations/types"
 
 type AppShellProps = {
   visualizations: VisualizationDefinition[]
   activeId: string
+  onSelect: (id: string) => void
   children: React.ReactNode
 }
 
-export function AppShell({ visualizations, activeId, children }: AppShellProps) {
+export function AppShell({
+  visualizations,
+  activeId,
+  onSelect,
+  children,
+}: AppShellProps) {
   return (
     <div className="min-h-screen">
       <header className="border-b bg-white/90 backdrop-blur">
@@ -29,14 +36,20 @@ export function AppShell({ visualizations, activeId, children }: AppShellProps) 
           </div>
           <nav className="flex flex-wrap items-center gap-2">
             {visualizations.map((visualization) => (
-              <Badge
+              <Button
                 key={visualization.id}
+                type="button"
                 variant={visualization.id === activeId ? "default" : "outline"}
-                className="gap-1.5 rounded-md px-3 py-1.5"
+                size="sm"
+                onClick={() => onSelect(visualization.id)}
+                className={cn(
+                  "gap-1.5",
+                  visualization.id === activeId && "shadow-sm",
+                )}
               >
                 <PanelsTopLeft className="h-3.5 w-3.5" />
                 {visualization.title}
-              </Badge>
+              </Button>
             ))}
           </nav>
         </div>

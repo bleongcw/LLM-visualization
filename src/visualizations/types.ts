@@ -16,6 +16,7 @@ export type VisualizationExample = {
 export type VisualizationDefinition = {
   id: string
   title: string
+  heading?: string
   path: string
   description: string
   modelBadge?: string

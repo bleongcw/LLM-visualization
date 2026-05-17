@@ -2,6 +2,24 @@
 
 All notable changes to this repository will be documented here.
 
+## v0.0.2 - 2026-05-17
+
+### Added
+
+- Added the `Selecting Next Token` visualization as a second registry-backed section.
+- Added clickable visualization tabs in the app shell.
+- Added a local `POST /api/token-distribution` endpoint for Ollama top-token candidate distributions.
+- Added client-side sampling controls for temperature, Top-K, and Top-P.
+- Added histogram and wheel probability views.
+- Added trial animation controls and generated answer rows for repeated sampling demonstrations.
+- Added sampling utility tests using the Node test runner.
+
+### Changed
+
+- Expanded repository documentation and usage instructions for both visualizations.
+- Updated the visualization shell heading to read from each visualization definition instead of hardcoding the autoregressive-loop title.
+- Renamed the first navigation tab to `Auto Regression Loop` while preserving the existing module id and route metadata.
+
 ## v0.0.1 - 2026-05-13
 
 ### Added

@@ -1,7 +1,11 @@
 import cors from "cors"
 import express from "express"
 
-import { generateNextToken, getOllamaHealth } from "./ollama.js"
+import {
+  generateNextToken,
+  getOllamaHealth,
+  getTokenDistribution,
+} from "./ollama.js"
 
 const app = express()
 const port = Number(process.env.API_PORT ?? 8787)
@@ -43,6 +47,39 @@ app.post("/api/next-token", async (request, response) => {
     response
       .status(502)
       .send(error instanceof Error ? error.message : "Ollama request failed.")
+  }
+})
+
+app.post("/api/token-distribution", async (request, response) => {
+  try {
+    const payload = request.body as {
+      prompt?: string
+      system?: string
+      maxCandidates?: number
+      contextLimit?: number
+    }
+
+    if (!payload.prompt?.trim()) {
+      response.status(400).send("Prompt is required.")
+      return
+    }
+
+    response.json(
+      await getTokenDistribution({
+        prompt: payload.prompt,
+        system: payload.system,
+        maxCandidates: payload.maxCandidates ?? 20,
+        contextLimit: payload.contextLimit ?? 2048,
+      }),
+    )
+  } catch (error) {
+    response
+      .status(502)
+      .send(
+        error instanceof Error
+          ? error.message
+          : "Ollama distribution request failed.",
+      )
   }
 })
 

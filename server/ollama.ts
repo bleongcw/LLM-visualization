@@ -162,6 +162,60 @@ export async function generateNextToken({
   }
 }
 
+export async function getTokenDistribution({
+  prompt,
+  system,
+  maxCandidates,
+  contextLimit,
+}: {
+  prompt: string
+  system?: string
+  maxCandidates: number
+  contextLimit: number
+}) {
+  const candidateLimit = Math.min(Math.max(1, maxCandidates), 20)
+  const body = {
+    model: MODEL,
+    messages: buildMessages(prompt, system, ""),
+    stream: false,
+    think: false,
+    logprobs: true,
+    top_logprobs: candidateLimit,
+    options: {
+      num_predict: 1,
+      temperature: 1,
+      num_ctx: contextLimit,
+      logprobs: true,
+      top_logprobs: candidateLimit,
+      stop: ["<|im_end|>", "<|im_start|>"],
+    },
+  }
+
+  const response = await fetch(`${OLLAMA_BASE_URL}/api/chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  })
+
+  if (!response.ok) {
+    const text = await response.text()
+    throw new Error(text || `Ollama returned ${response.status}`)
+  }
+
+  const json = (await response.json()) as OllamaChatResponse
+  const tokenInfo = json.logprobs?.[0]
+  const fallbackToken = json.message?.content ?? json.response ?? ""
+
+  return {
+    topCandidates: normalizeTopLogprobs(tokenInfo, fallbackToken, candidateLimit),
+    promptEvalCount: json.prompt_eval_count ?? estimateTokenCount(prompt),
+    evalCount: json.eval_count ?? 1,
+    contextCount: json.prompt_eval_count ?? estimateTokenCount(prompt),
+  }
+}
+
 function buildMessages(prompt: string, system: string | undefined, generated: string) {
   const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> =
     []
@@ -179,14 +233,18 @@ function buildMessages(prompt: string, system: string | undefined, generated: st
   return messages
 }
 
-function normalizeTopLogprobs(tokenInfo: OllamaLogprob | undefined, fallbackToken: string) {
+function normalizeTopLogprobs(
+  tokenInfo: OllamaLogprob | undefined,
+  fallbackToken: string,
+  maxCandidates = 20,
+) {
   const candidates = tokenInfo?.top_logprobs?.length
     ? tokenInfo.top_logprobs
     : [{ token: fallbackToken, logprob: tokenInfo?.logprob ?? 0, bytes: tokenInfo?.bytes }]
 
   return candidates
     .filter((candidate) => candidate.token)
-    .slice(0, 20)
+    .slice(0, maxCandidates)
     .map((candidate) => ({
       token: candidate.token ?? "",
       logprob: candidate.logprob ?? 0,
