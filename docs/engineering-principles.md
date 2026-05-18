@@ -22,8 +22,10 @@ Tie work to verifiable outcomes. For every non-trivial change, define what succe
 
 - Keep visualizations modular and independently understandable.
 - Keep model/provider calls behind adapters.
-- Prefer real model data over mocked teaching data when the local runtime supports it.
+- Prefer real model data when the learning goal depends on model behavior; prefer deterministic fixtures when the lesson needs a stable, replayable trace.
 - Keep docs close to the implementation so future visualizations are easy to add.
+- Keep expensive model calls explicit and user-initiated.
+- Reset stale derived output when its prompt, system instruction, or sampling settings change.
 
 ## Documentation Defaults
 
@@ -31,6 +33,8 @@ Tie work to verifiable outcomes. For every non-trivial change, define what succe
 - User-facing docs should explain what to click, what to observe, and what the result means.
 - Architecture docs should explain shared contracts, API routes, and provider boundaries.
 - Changelog entries should describe user-visible changes first, then technical support work.
+- Extension docs should name the pattern a future contributor should copy.
+- Usage docs should include at least one concrete exercise per visualization.
 
 ## Verification Defaults
 
@@ -48,3 +52,5 @@ For model-backed work, also verify Ollama:
 ```bash
 ./scripts/check-ollama.sh
 ```
+
+If the API route changed, smoke test it with `curl` while `npm run dev` is running. If the UI changed, do at least one browser walkthrough of the affected visualization.

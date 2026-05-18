@@ -55,6 +55,7 @@ app.post("/api/token-distribution", async (request, response) => {
     const payload = request.body as {
       prompt?: string
       system?: string
+      generated?: string
       maxCandidates?: number
       contextLimit?: number
     }
@@ -68,6 +69,7 @@ app.post("/api/token-distribution", async (request, response) => {
       await getTokenDistribution({
         prompt: payload.prompt,
         system: payload.system,
+        generated: payload.generated ?? "",
         maxCandidates: payload.maxCandidates ?? 20,
         contextLimit: payload.contextLimit ?? 2048,
       }),

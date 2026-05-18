@@ -20,6 +20,17 @@ The project includes `components.json`, which tells shadcn where Tailwind, alias
 
 Existing reusable primitives live in `src/components/ui`. Visualization-specific compositions should live in the visualization folder or under `src/components/*`, not in `src/components/ui`.
 
+## When To Use It
+
+Use the shadcn MCP when you need to:
+
+- discover an appropriate primitive for a new interaction
+- add a missing shadcn/ui component to `src/components/ui`
+- compare implementation patterns for dialogs, sheets, tabs, tooltips, sliders, or segmented controls
+- keep new visualizations consistent with the existing app structure
+
+Do not use it to generate visualization-specific business logic. Sampling math, Ollama adapters, and token-path helpers should remain ordinary project code with local tests.
+
 ## Example Prompts
 
 - Show available shadcn components for a dashboard-like teaching app.
@@ -36,6 +47,14 @@ Existing reusable primitives live in `src/components/ui`. Visualization-specific
 - Use `Sheet` for long instructions.
 - Use `Card` only for individual panels or repeated framed content.
 - Keep teaching panels compact and scannable.
+
+Current app conventions:
+
+- Primary teaching panels use compact card headers with a clear action area.
+- Expensive model calls are explicit button clicks.
+- The shared shell owns page-level instructions and Ollama health.
+- Visualization modules own their own tutorials, info dialogs, and local interaction state.
+- New primitives should be added through shadcn, then adapted locally if the project needs small accessibility or styling changes.
 
 ## Notes
 

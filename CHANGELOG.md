@@ -2,6 +2,37 @@
 
 All notable changes to this repository will be documented here.
 
+## v0.0.4 - 2026-05-17
+
+### Added
+
+- Added the `Constrained Generation with Finite State Machines (FSM)` visualization as the fourth registry-backed section.
+- Added a deterministic finite-state-machine simulator for schema-constrained JSON output.
+- Added prompt presets for function calls, sentiment classification, and data extraction.
+- Added a target schema panel, FSM diagram, playback controls, token masking comparison, and constrained-vs-unconstrained output comparison.
+- Added unit tests for FSM masking, probability renormalization, state-specific token allowance, required field tracking, fixture validity, and full trace generation.
+
+### Changed
+
+- Updated README, usage, architecture, and extension docs for constrained generation with finite state machines.
+
+## v0.0.3 - 2026-05-17
+
+### Added
+
+- Added the `How Sampling Shapes Output` visualization as a third registry-backed section.
+- Added a choose-your-own-completion panel that fetches follow-up token distributions after each selected token.
+- Added cumulative path probability for selected completion paths.
+- Added a multiple-completions panel that samples several continuations from the same prompt and settings.
+- Added confidence-colored completion token chips and match/divergence comparison against row #1.
+- Added path utility tests for cumulative probability, confidence bands, divergence, immutable token append behavior, and prompt previews.
+
+### Changed
+
+- Extended `POST /api/token-distribution` to accept a `generated` prefix for continuation-aware token distributions.
+- Expanded README, usage, architecture, and extension documentation for the third visualization.
+- Added fuller local setup, demo, troubleshooting, shadcn MCP, and contributor guidance across repository docs.
+
 ## v0.0.2 - 2026-05-17
 
 ### Added

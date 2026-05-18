@@ -1,4 +1,6 @@
 import { AutoregressiveLoop } from "@/visualizations/autoregressive-loop/autoregressive-loop"
+import { ConstrainedGenerationFsm } from "@/visualizations/constrained-generation-fsm"
+import { HowSamplingShapesOutput } from "@/visualizations/how-sampling-shapes-output"
 import { SelectingNextToken } from "@/visualizations/selecting-next-token"
 
 import type { VisualizationDefinition } from "./types"
@@ -83,5 +85,85 @@ export const visualizations: VisualizationDefinition[] = [
       },
     ],
     component: SelectingNextToken,
+  },
+  {
+    id: "how-sampling-shapes-output",
+    title: "How Sampling Shapes Output",
+    heading: "1.3. How Sampling Shapes Output",
+    path: "/how-sampling-shapes-output",
+    description:
+      "See how sampling parameters shape what the model generates next. Each time a token is chosen, a new set of candidate continuations appears with its own probability. Adjust the sampling parameters, then click tokens or generate multiple completions to compare the paths they open up.",
+    modelBadge: "qwen3:0.6b",
+    instructions: [
+      "Token selection during autoregressive generation is a random event, so identical prompts can lead to different completions depending on which token is selected at each cycle.",
+      "Use Choose Your Own Completion to generate candidate tokens, pick one, and observe how each choice changes the next column of candidates.",
+      "Watch the cumulative path probability change as you select likely or unlikely tokens.",
+      "Use Multiple Completions to generate several sampled continuations from the same prompt and compare where they match or diverge.",
+      "Change temperature, Top-K, or Top-P to see how output variety and token confidence change.",
+    ],
+    examples: [
+      {
+        id: "coding",
+        label: "Coding",
+        prompt:
+          "What are the allowed options for the cache_implementation parameter in transformers.GenerationConfig from hugging face?",
+        system:
+          "You answer technical questions with direct, concise wording and no hidden reasoning traces.",
+      },
+    ],
+    capabilities: [
+      {
+        provider: "ollama",
+        model: "qwen3:0.6b",
+        features: [
+          "chat",
+          "logprobs",
+          "top_logprobs",
+          "sampling",
+          "continuations",
+        ],
+      },
+    ],
+    component: HowSamplingShapesOutput,
+  },
+  {
+    id: "constrained-generation-fsm",
+    title: "Constrained Generation with Finite State Machines (FSM)",
+    heading: "1.4. Constrained Generation with Finite State Machines (FSM)",
+    path: "/constrained-generation-fsm",
+    description:
+      "See how constrained generation keeps a model's output inside a required JSON schema. At each step, the model proposes possible next tokens, and a finite state machine masks any token that would lead to an invalid state by setting its probability to zero. Step through the animation to watch the FSM advance character by character, compare original token probabilities with the masked distribution, then compare constrained output with unconstrained output.",
+    instructions: [
+      "Constrained generation is useful when the caller needs valid JSON, function-call arguments, classifications, or extracted fields instead of free-form text.",
+      "Choose a prompt preset, then inspect the target schema. The schema defines which keys and value types the final response must contain.",
+      "Use Step to advance one character at a time. The highlighted FSM state shows what kind of character is legal next.",
+      "Compare the raw candidate tokens with the masked distribution. Invalid candidates are assigned probability zero, and valid candidates are renormalized.",
+      "Compare the constrained output with the unconstrained output. The constrained side remains parseable JSON while the unconstrained side can drift into prose, markdown, or code.",
+    ],
+    examples: [
+      {
+        id: "function-call",
+        label: "Function Call",
+        prompt:
+          "Find the area of a triangle with base 10 and height 5. Respond with a JSON function call.",
+      },
+      {
+        id: "sentiment",
+        label: "Sentiment",
+        prompt: "Classify a product review as JSON.",
+      },
+      {
+        id: "data-extraction",
+        label: "Data Extraction",
+        prompt: "Extract structured JSON fields from a sentence.",
+      },
+    ],
+    capabilities: [
+      {
+        provider: "browser",
+        features: ["fsm", "json-schema", "token-masking"],
+      },
+    ],
+    component: ConstrainedGenerationFsm,
   },
 ]

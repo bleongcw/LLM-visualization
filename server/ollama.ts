@@ -165,18 +165,20 @@ export async function generateNextToken({
 export async function getTokenDistribution({
   prompt,
   system,
+  generated,
   maxCandidates,
   contextLimit,
 }: {
   prompt: string
   system?: string
+  generated?: string
   maxCandidates: number
   contextLimit: number
 }) {
   const candidateLimit = Math.min(Math.max(1, maxCandidates), 20)
   const body = {
     model: MODEL,
-    messages: buildMessages(prompt, system, ""),
+    messages: buildMessages(prompt, system, generated ?? ""),
     stream: false,
     think: false,
     logprobs: true,
@@ -210,9 +212,11 @@ export async function getTokenDistribution({
 
   return {
     topCandidates: normalizeTopLogprobs(tokenInfo, fallbackToken, candidateLimit),
-    promptEvalCount: json.prompt_eval_count ?? estimateTokenCount(prompt),
+    promptEvalCount:
+      json.prompt_eval_count ?? estimateTokenCount(`${prompt}${generated ?? ""}`),
     evalCount: json.eval_count ?? 1,
-    contextCount: json.prompt_eval_count ?? estimateTokenCount(prompt),
+    contextCount:
+      json.prompt_eval_count ?? estimateTokenCount(`${prompt}${generated ?? ""}`),
   }
 }
 

@@ -38,6 +38,7 @@ export type NextTokenResponse = {
 export type TokenDistributionRequest = {
   prompt: string
   system?: string
+  generated?: string
   maxCandidates?: number
   contextLimit?: number
 }
